@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+‎<html lang="en">
+‎<head>
+‎    <meta charset="UTF-8">
+‎    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎    <title>Lethbridge Core Control Cockpit</title>
+‎    <!-- Tailwind CSS Engine for high-precision layouts -->
+‎    <script src="https://jsdelivr.net"></script>
+‎</head>
+‎<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
+‎
+‎    <div class="max-w-4xl mx-auto space-y-6">
+‎        
+‎        <!-- HEADER MODULE -->
+‎        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+‎            <div>
+‎                <h1 class="text-2xl font-bold tracking-tight text-white">Lethbridge Telemetry Command Center</h1>
+‎                <p class="text-xs text-slate-400">Bi-directional Real-Time Event Stream Module</p>
+‎            </div>
+‎            <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+‎                <span class="relative flex h-2 w-2">
+‎                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+‎                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+‎                </span>
+‎                <span class="text-xs font-mono text-emerald-400 tracking-wide uppercase font-bold">SSE Active</span>
+‎            </div>
+‎        </div>
+‎
+‎        <!-- REAL-TIME ASSET TELEMETRY TICKERS -->
+‎        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+‎            <!-- FX: GBP/USD -->
+‎            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg">
+‎                <div class="flex justify-between items-start mb-2">
+‎                    <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">GBP / USD</span>
+‎                    <span id="delta-pair-gbpusd" class="text-xs font-mono font-bold text-slate-400">0.00%</span>
+‎                </div>
+‎                <div id="fx-gbpusd" class="text-2xl font-mono font-bold tracking-tight text-white">1.2845</div>
+‎            </div>
+‎
+‎            <!-- CRYPTO: BTC -->
+‎            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg">
+‎                <div class="flex justify-between items-start mb-2">
+‎                    <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">Bitcoin</span>
+‎                    <span id="delta-pair-btc" class="text-xs font-mono font-bold text-slate-400">0.00%</span>
+‎                </div>
+‎                <div id="crypto-btc" class="text-2xl font-mono font-bold tracking-tight text-white">65,000.00</div>
+‎            </div>
+‎
+‎            <!-- COMMODITY: OIL -->
+‎            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg">
+‎                <div class="flex justify-between items-start mb-2">
+‎                    <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">Crude Oil</span>
+‎                    <span id="delta-pair-oil" class="text-xs font-mono font-bold text-slate-400">0.00%</span>
+‎                </div>
+‎                <div id="cmd-oil" class="text-2xl font-mono font-bold tracking-tight text-white">75.50</div>
+‎            </div>
+‎        </div>
+‎
+‎        <!-- REAL-TIME ACTION CONTROL PANEL -->
+‎        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl max-w-md mx-auto">
+‎            <h2 class="text-lg font-bold text-slate-100 mb-1 flex items-center gap-2">
+‎                <span>⚡</span> Core Control Panel
+‎            </h2>
+‎            <p class="text-xs text-slate-400 mb-4">Tap an action module below to instantly push real-time telemetry out to Make.com.</p>
+‎            
+‎            <div class="grid grid-cols-1 gap-3">
+‎                <!-- Button 1: Market Pulse Override -->
+‎                <button 
+‎                    onclick="window.fireOutboundTelemetry({ event_type: 'market_override', intensity: 'high', asset_group: 'FX/Crypto' })"
+‎                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-sm font-semibold rounded-lg shadow-lg shadow-blue-900/40 transition-all duration-150 flex justify-between items-center text-left cursor-pointer"
+‎                >
+‎                    <span>🚀 Sync Market Pulse</span>
+‎                    <span class="text-[10px] bg-blue-800 px-2 py-0.5 rounded text-blue-200 uppercase tracking-wider font-bold">POST</span>
+‎                </button>
+‎
+‎                <!-- Button 2: Lethbridge System Ping -->
+‎                <button 
+‎                    onclick="window.fireOutboundTelemetry({ event_type: 'heartbeat_ping', node: 'lethbridge_main_hub', status: 'optimal' })"
+‎                    class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-semibold rounded-lg shadow-lg shadow-emerald-900/40 transition-all duration-150 flex justify-between items-center text-left cursor-pointer"
+‎                >
+‎                    <span>📡 Ping Lethbridge Node</span>
+‎                    <span class="text-[10px] bg-emerald-800 px-2 py-0.5 rounded text-emerald-200 uppercase tracking-wider font-bold">POST</span>
+‎                </button>
+‎
+‎                <!-- Button 3: Emergency Stream Intercept -->
+‎                <button 
+‎                    onclick="window.fireOutboundTelemetry({ event_type: 'stream_purge', target: 'all_active_pairs', forced: true })"
+‎                    class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-sm font-semibold rounded-lg shadow-lg shadow-rose-900/40 transition-all duration-150 flex justify-between items-center text-left cursor-pointer"
+‎                >
+‎                    <span>⚠️ Force Stream Purge</span>
+‎                    <span class="text-[10px] bg-rose-800 px-2 py-0.5 rounded text-rose-200 uppercase tracking-wider font-bold">POST</span>
+‎                </button>
+‎            </div>
+‎        </div>
+‎
+‎    </div>
+‎
+‎    <!-- Active Telemetry Real-Time Production Engine -->
+‎    <script>
+‎        document.addEventListener('DOMContentLoaded', () => {
+‎                                    
+‎            // --- CENTRAL GATEWAY CONFIGURATION ---
+‎            // Set up endpoints for real-time bi-directional messaging
+‎            const GATEWAY = {
+‎                MAKE_OUTBOUND_WEBHOOK: 'https://make.com',
+‎                LETHBRIDGE_INBOUND_STREAM: 'https://your-backend-gateway.com' 
+‎            };
+
+       // --- SECTION 1: 5hlp1hl5cgponjsg82a4ms8nwm5dxwq9 ---
+‎            /**
+‎             * Fires data payloads instantly to Make.com without polling delays
+‎             */
+‎         
+‎        async function fireOutboundTelemetry(payload) {
+‎            try {
+‎                // Hardcode your exact Make webhook link here directly
+‎                const targetUrl = 'https://make.com'; 
+‎                
+‎                const response = await fetch(targetUrl, {
+‎                    method: 'POST',
+‎                    headers: { 'Content-Type': 'application/json' },
+‎                    body: JSON.stringify({
+‎                        timestamp: new Date().toISOString(),
+‎                        origin: "Lethbridge_Cockpit",
+‎                        ...payload
+‎                    })
+‎                });
+‎                if (response.ok) {
+‎                    console.log('⚡ Real-time packet instantly caught by Make.com');
+‎                } else {
+‎                    console.error(`Gateway rejected transmission. Status: ${response.status}`);
+‎                }
+‎            } catch (error) {
+‎                console.error('Critical network failure transferring outbound data:', error);
+‎            }
+‎        }
+‎
+‎// --- SECTION 2: LIVE SSE RECONNECT GATEWAY (Inbound Stream) ---
+‎            const eventSource = new EventSource(GATEWAY.LETHBRIDGE_INBOUND_STREAM);
+‎
+‎            // Listen for incoming live Liftbridge pub/sub delta packets
+‎            eventSource.onmessage = (event) => {
+‎                try {
+‎                    const data = JSON.parse(event.data);
+‎                    if (data && data.pairs) {
+‎                        updateCockpitUI(data.pairs);
+‎                    }
+‎                } catch (error) {
+‎                    console.error('Error parsing live stream delta:', error);
+‎                }
+‎            };
+‎
+‎            // Handle connection errors gracefully
+‎            eventSource.onerror = (error) => {
+‎                console.error('SSE connection lost. Attempting to reconnect...', error);
+‎            };
+‎
+‎            // --- SECTION 3: UI RENDERING ENGINE ---
+‎            /**
+‎             * Dynamically updates metrics and tickers based on incoming data
+‎             */
+‎            function updateCockpitUI(pairs) {
+‎                pairs.forEach((pair) => {
+‎                    const deltaElement = document.getElementById(`delta-pair-${pair.id}`);
+‎                    const tickerElement = document.getElementById(`fx-${pair.id}`) || document.getElementById(`crypto-${pair.id}`) || document.getElementById(`cmd-${pair.id}`);
+‎                                                            
+‎                    // Update text and apply a visual flash instantly when live data ticks
+‎                    if (deltaElement) {
+‎                        deltaElement.textContent = `${pair.deltaValue}%`;
+‎                        visualizeUpdate(deltaElement, pair.direction);
+‎                    }
+‎                    if (tickerElement && pair.liveValue) {
+‎                        tickerElement.innerText = pair.liveValue;
+‎                        visualizeUpdate(tickerElement, pair.direction);
+‎                    }
+‎                });
+‎            }
+‎
+‎            // High-precision flash engine execution
+‎            // High-precision flash engine execution
+‎            function visualizeUpdate(element, direction) {
+‎                const activeClass = direction === 'up' ? 'text-green-500' : 'text-red-500';
+‎                element.classList.add(activeClass, 'transition-all', 'duration-200');
+‎                                                                
+‎                setTimeout(() => {
+‎                    element.classList.remove(activeClass);
+‎                }, 500);
+‎            } // <-- Closes visualizeUpdate
+‎
+‎            // Expose function globally so UI elements and buttons can trigger it natively
+‎            window.fireOutboundTelemetry = fireOutboundTelemetry;
+‎        }); // <-- Closes DOMContentLoaded listener
+‎    </script>
+‎</body>
+‎</html>
+‎
+‎
