@@ -1,0 +1,16 @@
+name: Route Ironclad Signatures to Make
+on:
+  repository_dispatch:
+    types: [ironclad_contract_signed]
+
+jobs:
+  forward_to_make:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Forward Contract Context to Make.com
+        env:
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$MAKE_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '${{ toJson(github.event.client_payload) }}'
