@@ -1,16 +1,57 @@
-name: Ironclad Signed Contract Processor
+ name: Ironclad Auto-Driven Pipeline
+
 on:
   repository_dispatch:
-    types: [ironclad_contract_signed] # This matches the event type we target
+    types: [ironclad_contract_signed]
+
+# Ensure only one runner processes an event at a time to prevent race conditions in Make.com
+concurrency:
+  group: ironclad-pipeline-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   route_to_make:
+    name: Validate and Forward Contract Context
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
-      - name: Send context to Make.com
+      - name: System Sanity & Secret Check
+        id: precheck
         env:
           MAKE_ENDPOINT: ${{ secrets.MAKE_WEBHOOK_URL }}
         run: |
-          curl -X POST "$MAKE_ENDPOINT" \
+          echo "=== Starting Pipeline Automation Validation ==="
+          if [ -z "$MAKE_ENDPOINT" ]; then
+            echo "::error::Critical Configuration Failure: MAKE_WEBHOOK_URL is not set in GitHub Secrets."
+            exit 1
+          fi
+          echo "✔ Destination Webhook secret validation successful."
+
+      - name: Forward Payload to Make.com with Error Handling
+        env:
+          MAKE_ENDPOINT: ${{ secrets.MAKE_WEBHOOK_URL }}
+          EVENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          echo "=== Initiating Secure Handshake with Make.com ==="
+          
+          # Execute POST request with error handling parameters:
+          # --fail: Explicitly fail the step if HTTP status code is >= 400
+          # --retry 3: Retry if network blips occur
+          # --max-time 15: Fail if Make.com hangs for more than 15 seconds
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$MAKE_ENDPOINT" \
             -H "Content-Type: application/json" \
-            -d '${{ toJson(github.event.client_payload) }}'
+            -H "X-Source-Trigger: GitHub-Actions-Ironclad-Pipeline" \
+            -d "$EVENT_PAYLOAD" \
+            --retry 3 \
+            --retry-delay 2 \
+            --max-time 15 \
+            --fail)
+
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          
+          echo "=== Pipeline Handshake Completed ==="
+          echo "Response Status Code from Make.com: $HTTP_STATUS"
+          echo "Pipeline is locked, loaded, and operating fully automated."
+          
