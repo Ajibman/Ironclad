@@ -1,0 +1,7 @@
+- name: Build and push Hardened Image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    file: ./.docker/production.Dockerfile # <-- Path from repository root
+    push: true
+    
